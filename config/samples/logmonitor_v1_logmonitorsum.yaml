@@ -4,4 +4,15 @@ metadata:
   name: logmonitorsum-sample
 spec:
   # Add fields here
-  foo: bar
+  labels: 
+    application: application
+    alarmSource: alarm_source
+    alarmContent: alarmContent
+    metricName: metricName
+    metricInstanceId: metricInstanceId
+    strategyName: name
+    strategyId: strategy_id
+    contact: contact
+    containerName: containerName
+  keyword: keyword
+  duration: duration

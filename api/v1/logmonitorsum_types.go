@@ -29,13 +29,28 @@ type LogMonitorSumSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of LogMonitorSum. Edit LogMonitorSum_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Labels   Label  `json:"labels,omitempty"`
+	Keyword  string `json:"keyword,omitempty"`
+	Duration string `json:"duration,omitempty"`
+}
+
+type Label struct {
+	Application      string `json:"application,omitempty"`
+	AlarmSource      string `json:"alarmSource,omitempty"`
+	AlarmContent     string `json:"alarmContent,omitempty"`
+	MetricName       string `json:"metricName,omitempty"`
+	MetricInstanceId string `json:"metricInstanceId,omitempty"`
+	StrategyName     string `json:"strategyName,omitempty"`
+	StrategyId       string `json:"strategyId,omitempty"`
+	Contact          string `json:"contact,omitempty"`
+	ContainerName    string `json:"containerName,omitempty"`
 }
 
 // LogMonitorSumStatus defines the observed state of LogMonitorSum
 type LogMonitorSumStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Created bool `json:"created,omitempty"`
 }
 
 // +kubebuilder:object:root=true

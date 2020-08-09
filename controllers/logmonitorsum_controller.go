@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -38,10 +39,23 @@ type LogMonitorSumReconciler struct {
 // +kubebuilder:rbac:groups=logmonitor.monitoring.coreos.com,resources=logmonitorsums/status,verbs=get;update;patch
 
 func (r *LogMonitorSumReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	_ = context.Background()
+	ctx := context.Background()
 	_ = r.Log.WithValues("logmonitorsum", req.NamespacedName)
 
 	// your logic here
+	lms := &logmonitorv1.LogMonitorSum{}
+	if err := r.Get(ctx, req.NamespacedName, lms); err != nil {
+		fmt.Errorf("couldn't find object:%s", req.String())
+	} else {
+		//打印Detail和Created
+		r.Log.V(1).Info("Successfully get LogMonitorSum", "LogMonitorSum", lms.Spec)
+		r.Log.V(1).Info("", "Created", lms.Status.Created)
+	}
+	// 2. Change Created
+	if !lms.Status.Created {
+		lms.Status.Created = true
+		r.Update(ctx, lms)
+	}
 
 	return ctrl.Result{}, nil
 }

@@ -34,13 +34,42 @@ spec:
         spec:
           description: LogMonitorSumSpec defines the desired state of LogMonitorSum
           properties:
-            foo:
+            duration:
+              type: string
+            keyword:
+              type: string
+            labels:
               description: Foo is an example field of LogMonitorSum. Edit LogMonitorSum_types.go
                 to remove/update
-              type: string
+              properties:
+                alarmContent:
+                  type: string
+                alarmSource:
+                  type: string
+                application:
+                  type: string
+                contact:
+                  type: string
+                containerName:
+                  type: string
+                metricInstanceId:
+                  type: string
+                metricName:
+                  type: string
+                strategyId:
+                  type: string
+                strategyName:
+                  type: string
+              type: object
           type: object
         status:
           description: LogMonitorSumStatus defines the observed state of LogMonitorSum
+          properties:
+            created:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: boolean
           type: object
       type: object
   version: v1
