@@ -1,0 +1,7 @@
+apiVersion: logmonitor.monitoring.coreos.com/v1
+kind: LogMonitorSum
+metadata:
+  name: logmonitorsum-sample
+spec:
+  # Add fields here
+  foo: bar

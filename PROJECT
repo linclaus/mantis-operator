@@ -1,3 +1,7 @@
 domain: monitoring.coreos.com
 repo: github.com/linclaus/mantis-opeartor
+resources:
+- group: logmonitor
+  kind: LogMonitorSum
+  version: v1
 version: "2"

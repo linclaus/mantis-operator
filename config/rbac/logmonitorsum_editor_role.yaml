@@ -1,0 +1,24 @@
+# permissions for end users to edit logmonitorsums.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: logmonitorsum-editor-role
+rules:
+- apiGroups:
+  - logmonitor.monitoring.coreos.com
+  resources:
+  - logmonitorsums
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - logmonitor.monitoring.coreos.com
+  resources:
+  - logmonitorsums/status
+  verbs:
+  - get
