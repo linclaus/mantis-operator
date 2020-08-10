@@ -18,7 +18,8 @@ package controllers
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/linclaus/mantis-opeartor/pkg/model"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -31,8 +32,9 @@ import (
 // LogMonitorSumReconciler reconciles a LogMonitorSum object
 type LogMonitorSumReconciler struct {
 	client.Client
-	Log    logr.Logger
-	Scheme *runtime.Scheme
+	Log              logr.Logger
+	Scheme           *runtime.Scheme
+	ElasticMetricMap *model.ElasticMetricMap
 }
 
 // +kubebuilder:rbac:groups=logmonitor.monitoring.coreos.com,resources=logmonitorsums,verbs=get;list;watch;create;update;patch;delete
@@ -42,22 +44,37 @@ func (r *LogMonitorSumReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 	ctx := context.Background()
 	_ = r.Log.WithValues("logmonitorsum", req.NamespacedName)
 
-	// your logic here
 	lms := &logmonitorv1.LogMonitorSum{}
+	strategyId := req.NamespacedName.Name
 	if err := r.Get(ctx, req.NamespacedName, lms); err != nil {
-		fmt.Errorf("couldn't find object:%s", req.String())
+		r.Log.V(1).Info("Deleted LogMonitorSum")
+		r.DeleteCRD(strategyId)
 	} else {
-		//打印Detail和Created
 		r.Log.V(1).Info("Successfully get LogMonitorSum", "LogMonitorSum", lms.Spec)
-		r.Log.V(1).Info("", "Created", lms.Status.Created)
-	}
-	// 2. Change Created
-	if !lms.Status.Created {
-		lms.Status.Created = true
+		r.CreateOrUpdateCRD(strategyId, lms)
+		if lms.Status.Created {
+			lms.Status.Created = false
+		} else {
+			lms.Status.Created = true
+		}
+		// r.Status().Update(ctx, lms)
 		r.Update(ctx, lms)
 	}
 
 	return ctrl.Result{}, nil
+}
+
+func (r *LogMonitorSumReconciler) CreateOrUpdateCRD(strategyId string, lm *logmonitorv1.LogMonitorSum) {
+	sm := &model.StrategyMetric{
+		StrategyId: strategyId,
+		Container:  lm.Spec.Labels.ContainerName,
+		Keyword:    lm.Spec.Keyword,
+	}
+	r.ElasticMetricMap.Set(sm.StrategyId, sm)
+}
+
+func (r *LogMonitorSumReconciler) DeleteCRD(strategyId string) {
+	r.ElasticMetricMap.Delete(strategyId)
 }
 
 func (r *LogMonitorSumReconciler) SetupWithManager(mgr ctrl.Manager) error {

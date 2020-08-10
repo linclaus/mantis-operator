@@ -50,7 +50,8 @@ type Label struct {
 type LogMonitorSumStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	Created bool `json:"created,omitempty"`
+	Status     string `json:"created,omitempty"`
+	RetryTimes int    `json:"retryTimes,omitempt"`
 }
 
 // +kubebuilder:object:root=true

@@ -28,6 +28,7 @@ import (
 
 	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
 	"github.com/linclaus/mantis-opeartor/controllers"
+	"github.com/linclaus/mantis-opeartor/pkg/model"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -67,9 +68,10 @@ func main() {
 	}
 
 	if err = (&controllers.LogMonitorSumReconciler{
-		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("LogMonitorSum"),
-		Scheme: mgr.GetScheme(),
+		Client:           mgr.GetClient(),
+		Log:              ctrl.Log.WithName("controllers").WithName("LogMonitorSum"),
+		Scheme:           mgr.GetScheme(),
+		ElasticMetricMap: new(model.ElasticMetricMap),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "LogMonitorSum")
 		os.Exit(1)
