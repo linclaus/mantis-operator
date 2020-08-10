@@ -48,7 +48,7 @@ func (m *ElasticMetricMap) Delete(k string) {
 	delete(m.elasticMetricMap, k)
 }
 
-func (m *ElasticMetricMap) Range(f func(k string, v model.StrategyMetric) bool) {
+func (m *ElasticMetricMap) Range(f func(k string, v *StrategyMetric) bool) {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 	for mk, mv := range m.elasticMetricMap {
