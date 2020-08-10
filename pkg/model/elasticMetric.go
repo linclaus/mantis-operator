@@ -50,8 +50,9 @@ func (m *ElasticMetricMap) Delete(k string) {
 
 func (m *ElasticMetricMap) Range(f func(k string, v *StrategyMetric) bool) {
 	m.lock.RLock()
-	defer m.lock.RUnlock()
-	for mk, mv := range m.elasticMetricMap {
+	tem := m.elasticMetricMap
+	m.lock.RUnlock()
+	for mk, mv := range tem {
 		if f(mk, mv) {
 			continue
 		} else {
