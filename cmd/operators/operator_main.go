@@ -48,7 +48,9 @@ func init() {
 func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
+	var elasticExportorAddr string
 	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
+	flag.StringVar(&elasticExportorAddr, "elasticExportor-addr", "http://localhost:8088", "The address of the elasticExportor address")
 	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
@@ -70,11 +72,12 @@ func main() {
 
 	httpClient := &http.Client{}
 	if err = (&controllers.LogMonitorSumReconciler{
-		Client:           mgr.GetClient(),
-		Log:              ctrl.Log.WithName("controllers").WithName("LogMonitorSum"),
-		Scheme:           mgr.GetScheme(),
-		ElasticMetricMap: new(model.ElasticMetricMap),
-		HttpClient:       httpClient,
+		Client:              mgr.GetClient(),
+		Log:                 ctrl.Log.WithName("controllers").WithName("LogMonitorSum"),
+		Scheme:              mgr.GetScheme(),
+		ElasticMetricMap:    new(model.ElasticMetricMap),
+		HttpClient:          httpClient,
+		ElasticExportorAddr: elasticExportorAddr,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "LogMonitorSum")
 		os.Exit(1)

@@ -36,10 +36,11 @@ import (
 // LogMonitorSumReconciler reconciles a LogMonitorSum object
 type LogMonitorSumReconciler struct {
 	client.Client
-	Log              logr.Logger
-	Scheme           *runtime.Scheme
-	ElasticMetricMap *model.ElasticMetricMap
-	HttpClient       *http.Client
+	Log                 logr.Logger
+	Scheme              *runtime.Scheme
+	ElasticMetricMap    *model.ElasticMetricMap
+	HttpClient          *http.Client
+	ElasticExportorAddr string
 }
 
 // +kubebuilder:rbac:groups=logmonitor.monitoring.coreos.com,resources=logmonitorsums,verbs=get;list;watch;create;update;patch;delete
@@ -82,14 +83,14 @@ func (r *LogMonitorSumReconciler) CreateOrUpdateCRD(strategyId string, lm *logmo
 	data["container"] = cn
 	data["keyword"] = kw
 	jsonData, _ := json.Marshal(data)
-	req, _ := http.NewRequest("PUT", fmt.Sprintf("http://localhost:8088/metric/%s", sm.StrategyId), bytes.NewReader(jsonData))
+	req, _ := http.NewRequest("PUT", fmt.Sprintf("%s/metric/%s", r.ElasticExportorAddr, sm.StrategyId), bytes.NewReader(jsonData))
 	r.HttpClient.Do(req)
 	return nil
 }
 
 func (r *LogMonitorSumReconciler) DeleteCRD(strategyId string) error {
 	r.ElasticMetricMap.Delete(strategyId)
-	req, _ := http.NewRequest("DELETE", fmt.Sprintf("http://localhost:8088/metric/%s", strategyId), nil)
+	req, _ := http.NewRequest("DELETE", fmt.Sprintf("%s/metric/%s", r.ElasticExportorAddr, strategyId), nil)
 	r.HttpClient.Do(req)
 	return nil
 }
