@@ -69,7 +69,11 @@ spec:
               description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
                 of cluster Important: Run "make" to regenerate code after modifying
                 this file'
-              type: boolean
+              type: string
+            retryTimes:
+              type: integer
+          required:
+          - retryTimes
           type: object
       type: object
   version: v1

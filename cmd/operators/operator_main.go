@@ -18,6 +18,7 @@ package main
 
 import (
 	"flag"
+	"net/http"
 	"os"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -67,11 +68,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	httpClient := &http.Client{}
 	if err = (&controllers.LogMonitorSumReconciler{
 		Client:           mgr.GetClient(),
 		Log:              ctrl.Log.WithName("controllers").WithName("LogMonitorSum"),
 		Scheme:           mgr.GetScheme(),
 		ElasticMetricMap: new(model.ElasticMetricMap),
+		HttpClient:       httpClient,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "LogMonitorSum")
 		os.Exit(1)

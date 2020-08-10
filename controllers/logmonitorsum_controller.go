@@ -17,7 +17,11 @@ limitations under the License.
 package controllers
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
 
 	"github.com/linclaus/mantis-opeartor/pkg/model"
 
@@ -35,6 +39,7 @@ type LogMonitorSumReconciler struct {
 	Log              logr.Logger
 	Scheme           *runtime.Scheme
 	ElasticMetricMap *model.ElasticMetricMap
+	HttpClient       *http.Client
 }
 
 // +kubebuilder:rbac:groups=logmonitor.monitoring.coreos.com,resources=logmonitorsums,verbs=get;list;watch;create;update;patch;delete
@@ -51,30 +56,42 @@ func (r *LogMonitorSumReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		r.DeleteCRD(strategyId)
 	} else {
 		r.Log.V(1).Info("Successfully get LogMonitorSum", "LogMonitorSum", lms.Spec)
-		r.CreateOrUpdateCRD(strategyId, lms)
-		if lms.Status.Created {
-			lms.Status.Created = false
-		} else {
-			lms.Status.Created = true
+		err := r.CreateOrUpdateCRD(strategyId, lms)
+		if err == nil {
+			lms.Status.Status = "Success"
 		}
-		// r.Status().Update(ctx, lms)
-		r.Update(ctx, lms)
 	}
+	if lms.Status.Status != "Success" {
+		lms.Status.Status = "Running"
+	}
+	r.Update(ctx, lms)
 
 	return ctrl.Result{}, nil
 }
 
-func (r *LogMonitorSumReconciler) CreateOrUpdateCRD(strategyId string, lm *logmonitorv1.LogMonitorSum) {
+func (r *LogMonitorSumReconciler) CreateOrUpdateCRD(strategyId string, lm *logmonitorv1.LogMonitorSum) error {
+	cn := lm.Spec.Labels.ContainerName
+	kw := lm.Spec.Keyword
 	sm := &model.StrategyMetric{
 		StrategyId: strategyId,
-		Container:  lm.Spec.Labels.ContainerName,
-		Keyword:    lm.Spec.Keyword,
+		Container:  cn,
+		Keyword:    kw,
 	}
 	r.ElasticMetricMap.Set(sm.StrategyId, sm)
+	data := make(map[string]interface{})
+	data["container"] = cn
+	data["keyword"] = kw
+	jsonData, _ := json.Marshal(data)
+	req, _ := http.NewRequest("PUT", fmt.Sprintf("http://localhost:8088/metric/%s", sm.StrategyId), bytes.NewReader(jsonData))
+	r.HttpClient.Do(req)
+	return nil
 }
 
-func (r *LogMonitorSumReconciler) DeleteCRD(strategyId string) {
+func (r *LogMonitorSumReconciler) DeleteCRD(strategyId string) error {
 	r.ElasticMetricMap.Delete(strategyId)
+	req, _ := http.NewRequest("DELETE", fmt.Sprintf("http://localhost:8088/metric/%s", strategyId), nil)
+	r.HttpClient.Do(req)
+	return nil
 }
 
 func (r *LogMonitorSumReconciler) SetupWithManager(mgr ctrl.Manager) error {

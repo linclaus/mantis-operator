@@ -102,7 +102,34 @@ func (s Server) CreateStrategyMetric(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s Server) UpdateStrategyMetric(w http.ResponseWriter, r *http.Request) {
-	s.CreateStrategyMetric(w, r)
+	defer r.Body.Close()
+	vars := mux.Vars(r)
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Failed to read payload: %s\n", err)
+		http.Error(w, fmt.Sprintf("Failed to read payload: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	if s.debug {
+		log.Println("Received webhook payload", string(body))
+	}
+	smr := &model.StrategyMetricRequest{}
+	json.Unmarshal([]byte(body), smr)
+	smr.StrategyId = vars["id"]
+	sm := s.elasticMetricMap.Get(smr.StrategyId)
+	if sm != nil {
+		if sm.Keyword != smr.Keyword || sm.StrategyId != smr.StrategyId {
+			metrics.ElasticMetricCountVec.DeleteLabelValues(sm.Keyword, sm.StrategyId)
+		}
+	}
+	sm = &model.StrategyMetric{
+		StrategyId: smr.StrategyId,
+		Container:  smr.Container,
+		Keyword:    smr.Keyword,
+	}
+	s.elasticMetricMap.Set(smr.StrategyId, sm)
 }
 
 func (s Server) DeleteStrategyMetric(w http.ResponseWriter, r *http.Request) {
