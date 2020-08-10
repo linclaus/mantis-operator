@@ -54,7 +54,9 @@ func (es ElasticDB) GetMetric(sm model.StrategyMetric) model.ElasticMetric {
 
 func (es ElasticDB) countByKeyword(container string, keyword string) float64 {
 	now := time.Now().UTC()
-	from := now.Add(-1 * time.Duration(1)).UTC()
+	indexString := now.Format(indexDateTemplate)
+	from, _ := time.Parse(indexDateTemplate, indexString)
+	from = from.UTC()
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"bool": map[string]interface{}{
