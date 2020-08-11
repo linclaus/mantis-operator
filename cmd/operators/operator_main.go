@@ -29,8 +29,8 @@ import (
 
 	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
 	"github.com/linclaus/mantis-opeartor/controllers"
+	"github.com/linclaus/mantis-opeartor/pkg/kubernetes"
 	"github.com/linclaus/mantis-opeartor/pkg/model"
-	"github.com/linclaus/mantis-opeartor/pkg/prometheus"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -72,7 +72,7 @@ func main() {
 	}
 
 	httpClient := &http.Client{}
-	framework, _ := prometheus.New("", "http://127.0.0.1:8001")
+	framework, _ := kubernetes.New("", "http://127.0.0.1:8001")
 	if err = (&controllers.LogMonitorSumReconciler{
 		Client:              mgr.GetClient(),
 		Log:                 ctrl.Log.WithName("controllers").WithName("LogMonitorSum"),
