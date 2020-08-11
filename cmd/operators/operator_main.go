@@ -30,6 +30,7 @@ import (
 	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
 	"github.com/linclaus/mantis-opeartor/controllers"
 	"github.com/linclaus/mantis-opeartor/pkg/model"
+	"github.com/linclaus/mantis-opeartor/pkg/prometheus"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -71,6 +72,7 @@ func main() {
 	}
 
 	httpClient := &http.Client{}
+	framework, _ := prometheus.New("", "http://127.0.0.1:8001")
 	if err = (&controllers.LogMonitorSumReconciler{
 		Client:              mgr.GetClient(),
 		Log:                 ctrl.Log.WithName("controllers").WithName("LogMonitorSum"),
@@ -78,6 +80,7 @@ func main() {
 		ElasticMetricMap:    new(model.ElasticMetricMap),
 		HttpClient:          httpClient,
 		ElasticExportorAddr: elasticExportorAddr,
+		Framework:           framework,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "LogMonitorSum")
 		os.Exit(1)
