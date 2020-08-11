@@ -23,8 +23,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/linclaus/mantis-opeartor/pkg/model"
 	"github.com/linclaus/mantis-opeartor/pkg/kubernetes"
+	"github.com/linclaus/mantis-opeartor/pkg/model"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -57,13 +57,13 @@ func (r *LogMonitorSumReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 
 	lms := &logmonitorv1.LogMonitorSum{}
 	strategyId := req.NamespacedName.Name
-	ns:=req.Namespace
+	ns := req.Namespace
 	if err := r.Get(ctx, req.NamespacedName, lms); err != nil {
 		r.Log.V(1).Info("Deleted LogMonitorSum")
-		r.DeleteCRD(ns,strategyId)
+		r.DeleteCRD(ns, strategyId)
 	} else {
 		r.Log.V(1).Info("Successfully get LogMonitorSum", "LogMonitorSum", lms.Spec)
-		err := r.CreateOrUpdateCRD(ns,strategyId, lms)
+		err := r.CreateOrUpdateCRD(ns, strategyId, lms)
 		if err == nil {
 			lms.Status.Status = "Success"
 		}
@@ -76,7 +76,7 @@ func (r *LogMonitorSumReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 	return ctrl.Result{}, nil
 }
 
-func (r *LogMonitorSumReconciler) CreateOrUpdateCRD(namespace,strategyId string, lm *logmonitorv1.LogMonitorSum) error {
+func (r *LogMonitorSumReconciler) CreateOrUpdateCRD(namespace, strategyId string, lm *logmonitorv1.LogMonitorSum) error {
 	cn := lm.Spec.Labels.ContainerName
 	kw := lm.Spec.Keyword
 	l := lm.Spec.Labels
@@ -103,64 +103,24 @@ func (r *LogMonitorSumReconciler) CreateOrUpdateCRD(namespace,strategyId string,
 		},
 	}
 
-	rule:=r.Framework.MakeBasicRule(namespace, strategyId, groups)
-	r.Framework.DeleteRule(namespace,strategyId)
-	r.Framework.CreateRule(namespace,rule)
+	rule := r.Framework.MakeBasicRule(namespace, strategyId, groups)
+	r.Framework.DeleteRule(namespace, strategyId)
+	r.Framework.CreateRule(namespace, rule)
 
 	//update Alertmanager secret
 	//TODO update secret namespace
-	secret,_:=r.Framework.GetSecret("moebius-system","alertmanager-r-prometheus-operator-alertmanager")
-	if secret!=nil{
-		b:=secret.Data["alertmanager.yaml"]
-		fmt.Printf("%s",b)
-		cfg,_:=alertmangerconfig.Load(string(b))
-		
-		var crv *alertmangerconfig.Receiver
+	secret, _ := r.Framework.GetSecret("moebius-system", "alertmanager-r-prometheus-operator-alertmanager")
+	if secret != nil {
+		b := secret.Data["alertmanager.yaml"]
+		fmt.Printf("%s", b)
+		cfg, _ := alertmangerconfig.Load(string(b))
 
-		index:=-1
-		for i,rv:=range cfg.Receivers{
-			fmt.Println(rv)
-			if rv.Name==strategyId{
-				crv=rv
-				index=i
-				break
-			}
-		}
-		crv=&alertmangerconfig.Receiver{
-			Name:strategyId,
-		}
-		if index==-1{
-			cfg.Receivers=append(cfg.Receivers,crv)
-		}else{
-			cfg.Receivers[index]=crv
-		}
-		fmt.Println(crv)
+		cfg.Receivers = kubernetes.UpdatedReceivers(cfg.Receivers, strategyId)
+		cfg.Route.Routes = kubernetes.UpdatedRoutes(cfg.Route.Routes, strategyId)
 
-
-		var rt *alertmangerconfig.Route
-
-		index=-1
-		for i,route:=range cfg.Route.Routes{
-			fmt.Println(route)
-			if route.Receiver==strategyId{
-				rt=route
-				index=i
-				break
-			}
-		}
-		rt=&alertmangerconfig.Route{
-			Receiver:strategyId,
-		}
-		if index==-1{
-			cfg.Route.Routes=append(cfg.Route.Routes,rt)
-		}else{
-			cfg.Route.Routes[index]=rt
-		}
-
-		secret.Data["alertmanager.yaml"]=[]byte(cfg.String())
-		r.Framework.UpdateSecret("moebius-system",secret)
+		secret.Data["alertmanager.yaml"] = []byte(cfg.String())
+		r.Framework.UpdateSecret("moebius-system", secret)
 	}
-	
 
 	//create ElasticMetric
 
@@ -179,48 +139,22 @@ func (r *LogMonitorSumReconciler) CreateOrUpdateCRD(namespace,strategyId string,
 	return nil
 }
 
-func (r *LogMonitorSumReconciler) DeleteCRD(namespace,strategyId string) error {
+func (r *LogMonitorSumReconciler) DeleteCRD(namespace, strategyId string) error {
 	//delete prometheusRule
-	r.Framework.DeleteRule(namespace,strategyId)
+	r.Framework.DeleteRule(namespace, strategyId)
 
 	//update Alertmanager secret
-	secret,_:=r.Framework.GetSecret("moebius-system","alertmanager-r-prometheus-operator-alertmanager")
-	if secret!=nil{
-		b:=secret.Data["alertmanager.yaml"]
-		fmt.Printf("%s",b)
-		cfg,_:=alertmangerconfig.Load(string(b))
-		
+	secret, _ := r.Framework.GetSecret("moebius-system", "alertmanager-r-prometheus-operator-alertmanager")
+	if secret != nil {
+		b := secret.Data["alertmanager.yaml"]
+		fmt.Printf("%s", b)
+		cfg, _ := alertmangerconfig.Load(string(b))
 
-		index:=-1
-		for i,rv:=range cfg.Receivers{
-			fmt.Println(rv)
-			if rv.Name==strategyId{
-				index=i
-				break
-			}
-		}
+		cfg.Receivers = kubernetes.DeletedReceivers(cfg.Receivers, strategyId)
+		cfg.Route.Routes = kubernetes.DeletedRoutes(cfg.Route.Routes, strategyId)
 
-		if index!=-1{
-			cfg.Receivers=append(cfg.Receivers[:index],cfg.Receivers[index+1:]...)
-		}
-
-
-
-		index=-1
-		for i,route:=range cfg.Route.Routes{
-			fmt.Println(route)
-			if route.Receiver==strategyId{
-				index=i
-				break
-			}
-		}
-		
-		if index!=-1{
-			cfg.Route.Routes=append(cfg.Route.Routes[:index],cfg.Route.Routes[index+1:]...)
-		}
-
-		secret.Data["alertmanager.yaml"]=[]byte(cfg.String())
-		r.Framework.UpdateSecret("moebius-system",secret)
+		secret.Data["alertmanager.yaml"] = []byte(cfg.String())
+		r.Framework.UpdateSecret("moebius-system", secret)
 	}
 
 	//delete ElasticMetric
