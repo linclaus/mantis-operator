@@ -5,8 +5,38 @@ import (
 	"fmt"
 
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
+	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 )
+
+func (f *Framework) MakeLogMonitorRule(namespace, strategyId string, lm *logmonitorv1.LogMonitorSum) *monitoringv1.PrometheusRule {
+	l := lm.Spec.Labels
+	groups := []monitoringv1.RuleGroup{
+		{
+			Name: strategyId,
+			Rules: []monitoringv1.Rule{
+				{
+					Alert: strategyId,
+					Expr:  intstr.FromString("vector(1)"),
+					Labels: map[string]string{
+						"alarm_content":  l.AlarmContent,
+						"alarm_source":   l.AlarmSource,
+						"application":    l.Application,
+						"contact":        l.Contact,
+						"container_name": l.ContainerName,
+						"metric_name":    l.MetricName,
+						"strategy_id":    l.StrategyId,
+						"strategy_name":  l.StrategyName,
+					},
+				},
+			},
+		},
+	}
+
+	rule := f.MakeBasicRule(namespace, strategyId, groups)
+	return rule
+}
 
 func (f *Framework) MakeBasicRule(ns, name string, groups []monitoringv1.RuleGroup) *monitoringv1.PrometheusRule {
 	return &monitoringv1.PrometheusRule{

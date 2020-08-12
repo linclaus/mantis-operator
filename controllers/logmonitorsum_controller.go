@@ -28,11 +28,9 @@ import (
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
 	alertmangerconfig "github.com/prometheus/alertmanager/config"
 )
@@ -79,31 +77,8 @@ func (r *LogMonitorSumReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 func (r *LogMonitorSumReconciler) CreateOrUpdateCRD(namespace, strategyId string, lm *logmonitorv1.LogMonitorSum) error {
 	cn := lm.Spec.Labels.ContainerName
 	kw := lm.Spec.Keyword
-	l := lm.Spec.Labels
-	//create PrometheusRule
-	groups := []monitoringv1.RuleGroup{
-		{
-			Name: strategyId,
-			Rules: []monitoringv1.Rule{
-				{
-					Alert: strategyId,
-					Expr:  intstr.FromString("vector(1)"),
-					Labels: map[string]string{
-						"alarm_content":  "l.AlarmContent",
-						"alarm_source":   l.AlarmSource,
-						"application":    l.Application,
-						"contact":        l.Contact,
-						"container_name": l.ContainerName,
-						"metric_name":    l.MetricName,
-						"strategy_id":    l.StrategyId,
-						"strategy_name":  l.StrategyName,
-					},
-				},
-			},
-		},
-	}
-
-	rule := r.Framework.MakeBasicRule(namespace, strategyId, groups)
+	//update PrometheusRule
+	rule := r.Framework.MakeLogMonitorRule(namespace, strategyId, lm)
 	r.Framework.DeleteRule(namespace, strategyId)
 	r.Framework.CreateRule(namespace, rule)
 
@@ -123,7 +98,6 @@ func (r *LogMonitorSumReconciler) CreateOrUpdateCRD(namespace, strategyId string
 	}
 
 	//create ElasticMetric
-
 	sm := &model.StrategyMetric{
 		StrategyId: strategyId,
 		Container:  cn,
