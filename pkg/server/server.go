@@ -50,7 +50,7 @@ func (s Server) metricHandler(next http.Handler) http.Handler {
 		s.elasticMetricMap.Range(func(k string, v *model.StrategyMetric) bool {
 			em := s.db.GetMetric(*v)
 			log.Printf("elasticMetric: %s\n", em)
-			metrics.ElasticMetricCountVec.WithLabelValues(em.Keyword, em.StrategyId).Set(em.Count)
+			metrics.ElasticMetricCountVec.WithLabelValues(em.StrategyId).Set(em.Count)
 			return true
 		})
 		next.ServeHTTP(w, r)
@@ -94,8 +94,7 @@ func (s Server) CreateStrategyMetric(w http.ResponseWriter, r *http.Request) {
 	if sm == nil {
 		sm = &model.StrategyMetric{
 			StrategyId: smr.StrategyId,
-			Container:  smr.Container,
-			Keyword:    smr.Keyword,
+			Dsl:        smr.Dsl,
 		}
 		s.elasticMetricMap.Set(smr.StrategyId, sm)
 	}
@@ -120,14 +119,13 @@ func (s Server) UpdateStrategyMetric(w http.ResponseWriter, r *http.Request) {
 	smr.StrategyId = vars["id"]
 	sm := s.elasticMetricMap.Get(smr.StrategyId)
 	if sm != nil {
-		if sm.Keyword != smr.Keyword || sm.StrategyId != smr.StrategyId {
-			metrics.ElasticMetricCountVec.DeleteLabelValues(sm.Keyword, sm.StrategyId)
+		if sm.Dsl != smr.Dsl || sm.StrategyId != smr.StrategyId {
+			metrics.ElasticMetricCountVec.DeleteLabelValues(sm.StrategyId)
 		}
 	}
 	sm = &model.StrategyMetric{
 		StrategyId: smr.StrategyId,
-		Container:  smr.Container,
-		Keyword:    smr.Keyword,
+		Dsl:        smr.Dsl,
 	}
 	s.elasticMetricMap.Set(smr.StrategyId, sm)
 }
@@ -136,7 +134,7 @@ func (s Server) DeleteStrategyMetric(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	em := s.elasticMetricMap.Get(vars["id"])
 	if em != nil {
-		metrics.ElasticMetricCountVec.DeleteLabelValues(em.Keyword, em.StrategyId)
+		metrics.ElasticMetricCountVec.DeleteLabelValues(em.StrategyId)
 		s.elasticMetricMap.Delete(em.StrategyId)
 	}
 }

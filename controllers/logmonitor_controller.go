@@ -69,14 +69,13 @@ func (r *LogMonitorReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 	if lms.Status.Status != "Success" {
 		lms.Status.Status = "Running"
 	}
-	r.Update(ctx, lms)
+	r.Status().Update(ctx, lms)
 
 	return ctrl.Result{}, nil
 }
 
 func (r *LogMonitorReconciler) CreateOrUpdateCRD(namespace, strategyId string, lm *logmonitorv1.LogMonitor) error {
-	cn := lm.Spec.Labels.ContainerName
-	kw := lm.Spec.Keyword
+	fmt.Printf("logmonitor: %s\n", lm.Spec)
 	//update PrometheusRule
 	rule := r.Framework.MakeLogMonitorRule(namespace, strategyId, lm)
 	r.Framework.DeleteRule(namespace, strategyId)
@@ -99,13 +98,11 @@ func (r *LogMonitorReconciler) CreateOrUpdateCRD(namespace, strategyId string, l
 	//create ElasticMetric
 	sm := &model.StrategyMetric{
 		StrategyId: strategyId,
-		Container:  cn,
-		Keyword:    kw,
+		Dsl:        lm.Spec.Dsl,
 	}
 	r.ElasticMetricMap.Set(sm.StrategyId, sm)
 	data := make(map[string]interface{})
-	data["container"] = cn
-	data["keyword"] = kw
+	data["dsl"] = lm.Spec.Dsl
 	jsonData, _ := json.Marshal(data)
 	req, _ := http.NewRequest("PUT", fmt.Sprintf("%s/metric/%s", r.ElasticExportorAddr, sm.StrategyId), bytes.NewReader(jsonData))
 	r.HttpClient.Do(req)

@@ -17,7 +17,6 @@ func (db NullDB) GetMetric(sm model.StrategyMetric) model.ElasticMetric {
 	count := 123.0
 	log.Printf("count : %f", count)
 	em := model.ElasticMetric{
-		Keyword:    sm.Keyword,
 		StrategyId: sm.StrategyId,
 		Count:      count,
 	}

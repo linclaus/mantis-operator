@@ -15,6 +15,8 @@ spec:
     plural: logmonitors
     singular: logmonitor
   scope: Namespaced
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       description: LogMonitor is the Schema for the logmonitors API
@@ -34,9 +36,9 @@ spec:
         spec:
           description: LogMonitorSpec defines the desired state of LogMonitor
           properties:
-            duration:
+            dsl:
               type: string
-            keyword:
+            duration:
               type: string
             labels:
               description: Foo is an example field of LogMonitor. Edit LogMonitor_types.go
@@ -61,6 +63,8 @@ spec:
                 strategyName:
                   type: string
               type: object
+            promql:
+              type: string
           type: object
         status:
           description: LogMonitorStatus defines the observed state of LogMonitor

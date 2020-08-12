@@ -8,7 +8,7 @@ var (
 	ElasticMetricCountVec = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "elastic_metric_gauge_vec",
 		Help: "elastic count",
-	}, []string{"keyword", "strategy_id"})
+	}, []string{"strategy_id"})
 )
 
 //Init metric

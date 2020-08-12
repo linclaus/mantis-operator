@@ -5,15 +5,13 @@ import (
 )
 
 type ElasticMetric struct {
-	Keyword    string
 	StrategyId string
 	Count      float64
 }
 
 type StrategyMetric struct {
 	StrategyId string
-	Container  string
-	Keyword    string
+	Dsl        string
 }
 
 type ElasticMetricMap struct {

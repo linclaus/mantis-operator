@@ -18,7 +18,7 @@ func (f *Framework) MakeLogMonitorRule(namespace, strategyId string, lm *logmoni
 			Rules: []monitoringv1.Rule{
 				{
 					Alert: strategyId,
-					Expr:  intstr.FromString("vector(1)"),
+					Expr:  intstr.FromString(lm.Spec.Promql),
 					Labels: map[string]string{
 						"alarm_content":  l.AlarmContent,
 						"alarm_source":   l.AlarmSource,

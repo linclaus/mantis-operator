@@ -30,7 +30,8 @@ type LogMonitorSpec struct {
 
 	// Foo is an example field of LogMonitor. Edit LogMonitor_types.go to remove/update
 	Labels   Label  `json:"labels,omitempty"`
-	Keyword  string `json:"keyword,omitempty"`
+	Dsl      string `json:"dsl,omitempty"`
+	Promql   string `json:"promql,omitempty"`
 	Duration string `json:"duration,omitempty"`
 }
 
@@ -54,6 +55,7 @@ type LogMonitorStatus struct {
 	RetryTimes int    `json:"retryTimes,omitempt"`
 }
 
+// +kubebuilder:subresource:status
 // +kubebuilder:object:root=true
 
 // LogMonitor is the Schema for the logmonitors API

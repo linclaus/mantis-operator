@@ -42,50 +42,27 @@ func (es ElasticDB) GetVersion() error {
 }
 
 func (es ElasticDB) GetMetric(sm model.StrategyMetric) model.ElasticMetric {
-	count := es.countByKeyword(sm.Container, sm.Keyword)
+	count := es.countByDSL(sm.Dsl)
 	log.Printf("count : %f", count)
 	em := model.ElasticMetric{
-		Keyword:    sm.Keyword,
 		StrategyId: sm.StrategyId,
 		Count:      count,
 	}
 	return em
 }
 
-func (es ElasticDB) countByKeyword(container string, keyword string) float64 {
+func (es ElasticDB) countByDSL(dsl string) float64 {
 	now := time.Now().UTC()
 	indexString := now.Format(indexDateTemplate)
 	from, _ := time.Parse(indexDateTemplate, indexString)
 	from = from.UTC()
-	query := map[string]interface{}{
-		"query": map[string]interface{}{
-			"bool": map[string]interface{}{
-				"must": []map[string]interface{}{
-					map[string]interface{}{
-						"term": map[string]interface{}{
-							"kubernetes.container.name": container,
-						}},
-					map[string]interface{}{"match_phrase": map[string]interface{}{
-						"message": keyword,
-					}},
-					map[string]interface{}{"range": map[string]interface{}{
-						"@timestamp": map[string]interface{}{
-							"gt": from.Format(dateTemplate),
-							"lt": now.Format(dateTemplate),
-						}},
-					},
-				},
-			},
-		},
-	}
-	jsonBody, _ := json.Marshal(query)
 
-	log.Printf("jsonBody: %s", jsonBody)
+	log.Printf("dsl: %s", dsl)
 
 	req := esapi.CountRequest{
-		Index:        []string{strings.Join([]string{indexPrefix, from.Format(indexDateTemplate)}, ""), strings.Join([]string{indexPrefix, now.Format(indexDateTemplate)}, "")},
+		Index:        []string{strings.Join([]string{indexPrefix, now.Format(indexDateTemplate)}, "")},
 		DocumentType: []string{"doc"},
-		Body:         bytes.NewReader(jsonBody),
+		Body:         bytes.NewReader([]byte(dsl)),
 	}
 	res, err := req.Do(context.Background(), es.esClient)
 	if err != nil {
