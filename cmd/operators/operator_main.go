@@ -73,16 +73,16 @@ func main() {
 
 	httpClient := &http.Client{}
 	framework, _ := kubernetes.New("", "http://127.0.0.1:8001")
-	if err = (&controllers.LogMonitorSumReconciler{
+	if err = (&controllers.LogMonitorReconciler{
 		Client:              mgr.GetClient(),
-		Log:                 ctrl.Log.WithName("controllers").WithName("LogMonitorSum"),
+		Log:                 ctrl.Log.WithName("controllers").WithName("LogMonitor"),
 		Scheme:              mgr.GetScheme(),
 		ElasticMetricMap:    new(model.ElasticMetricMap),
 		HttpClient:          httpClient,
 		ElasticExportorAddr: elasticExportorAddr,
 		Framework:           framework,
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "LogMonitorSum")
+		setupLog.Error(err, "unable to create controller", "controller", "LogMonitor")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder

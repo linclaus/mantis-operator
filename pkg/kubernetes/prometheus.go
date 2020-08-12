@@ -10,7 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
-func (f *Framework) MakeLogMonitorRule(namespace, strategyId string, lm *logmonitorv1.LogMonitorSum) *monitoringv1.PrometheusRule {
+func (f *Framework) MakeLogMonitorRule(namespace, strategyId string, lm *logmonitorv1.LogMonitor) *monitoringv1.PrometheusRule {
 	l := lm.Spec.Labels
 	groups := []monitoringv1.RuleGroup{
 		{

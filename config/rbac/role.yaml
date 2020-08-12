@@ -9,7 +9,7 @@ rules:
 - apiGroups:
   - logmonitor.monitoring.coreos.com
   resources:
-  - logmonitorsums
+  - logmonitors
   verbs:
   - create
   - delete
@@ -21,7 +21,7 @@ rules:
 - apiGroups:
   - logmonitor.monitoring.coreos.com
   resources:
-  - logmonitorsums/status
+  - logmonitors/status
   verbs:
   - get
   - patch

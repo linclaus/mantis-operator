@@ -6,18 +6,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.2.5
   creationTimestamp: null
-  name: logmonitorsums.logmonitor.monitoring.coreos.com
+  name: logmonitors.logmonitor.monitoring.coreos.com
 spec:
   group: logmonitor.monitoring.coreos.com
   names:
-    kind: LogMonitorSum
-    listKind: LogMonitorSumList
-    plural: logmonitorsums
-    singular: logmonitorsum
+    kind: LogMonitor
+    listKind: LogMonitorList
+    plural: logmonitors
+    singular: logmonitor
   scope: Namespaced
   validation:
     openAPIV3Schema:
-      description: LogMonitorSum is the Schema for the logmonitorsums API
+      description: LogMonitor is the Schema for the logmonitors API
       properties:
         apiVersion:
           description: 'APIVersion defines the versioned schema of this representation
@@ -32,14 +32,14 @@ spec:
         metadata:
           type: object
         spec:
-          description: LogMonitorSumSpec defines the desired state of LogMonitorSum
+          description: LogMonitorSpec defines the desired state of LogMonitor
           properties:
             duration:
               type: string
             keyword:
               type: string
             labels:
-              description: Foo is an example field of LogMonitorSum. Edit LogMonitorSum_types.go
+              description: Foo is an example field of LogMonitor. Edit LogMonitor_types.go
                 to remove/update
               properties:
                 alarmContent:
@@ -63,7 +63,7 @@ spec:
               type: object
           type: object
         status:
-          description: LogMonitorSumStatus defines the observed state of LogMonitorSum
+          description: LogMonitorStatus defines the observed state of LogMonitor
           properties:
             created:
               description: 'INSERT ADDITIONAL STATUS FIELD - define observed state

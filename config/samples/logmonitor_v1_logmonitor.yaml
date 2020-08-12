@@ -1,0 +1,19 @@
+apiVersion: logmonitor.monitoring.coreos.com/v1
+kind: LogMonitor
+metadata:
+  name: logmonitor-sample
+spec:
+  # Add fields here
+  labels: 
+    application: application
+    alarmSource: alarm_source
+    alarmContent: alarmContent
+    metricName: metricName
+    metricInstanceId: metricInstanceId
+    strategyName: name
+    strategyId: logmonitor-sample
+    contact: contact
+    containerName: containerName
+  dsl: {"query":{"bool":{"must":[{"term":{"kubernetes.container.name":"container"}},{"match_phrase":{"message":"hello"}}]}}}
+  promql: vector(1)
+  duration: 20m

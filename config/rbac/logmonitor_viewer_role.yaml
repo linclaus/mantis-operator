@@ -1,0 +1,20 @@
+# permissions for end users to view logmonitors.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: logmonitor-viewer-role
+rules:
+- apiGroups:
+  - logmonitor.monitoring.coreos.com
+  resources:
+  - logmonitors
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - logmonitor.monitoring.coreos.com
+  resources:
+  - logmonitors/status
+  verbs:
+  - get
