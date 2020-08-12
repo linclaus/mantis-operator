@@ -64,10 +64,15 @@ func (r *LogMonitorReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 		err := r.CreateOrUpdateCRD(ns, strategyId, lms)
 		if err == nil {
 			lms.Status.Status = "Success"
+			lms.Status.RetryTimes = 0
+		} else {
+			rty := lms.Status.RetryTimes
+			if rty >= 100 {
+				return ctrl.Result{}, nil
+			}
+			lms.Status.Status = "Failed"
+			lms.Status.RetryTimes = rty + 1
 		}
-	}
-	if lms.Status.Status != "Success" {
-		lms.Status.Status = "Running"
 	}
 	r.Status().Update(ctx, lms)
 
