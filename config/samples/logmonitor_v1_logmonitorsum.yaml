@@ -14,6 +14,6 @@ spec:
     strategyId: logmonitorsum-sample
     contact: contact
     containerName: containerName
-  dsl: {"query":{"bool":{"must":[{"term":{"kubernetes.container.name":"container"}},{"match_phrase":{"message":"hello"}},{"range":{"@timestamp":{"gt":"2020-08-12T00:00:00","lt":"2020-08-12T10:21:20"}}}]}}}
+  dsl: {"query":{"bool":{"must":[{"term":{"kubernetes.container.name":"container"}},{"match_phrase":{"message":"hello"}}]}}}
   promql: vector(1)
   duration: 20m

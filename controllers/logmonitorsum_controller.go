@@ -87,12 +87,11 @@ func (r *LogMonitorSumReconciler) CreateOrUpdateCRD(namespace, strategyId string
 	secret, _ := r.Framework.GetSecret("moebius-system", "alertmanager-r-prometheus-operator-alertmanager")
 	if secret != nil {
 		b := secret.Data["alertmanager.yaml"]
-		fmt.Printf("%s", b)
 		cfg, _ := alertmangerconfig.Load(string(b))
 
 		cfg.Receivers = kubernetes.UpdatedReceivers(cfg.Receivers, strategyId)
 		cfg.Route.Routes = kubernetes.UpdatedRoutes(cfg.Route.Routes, strategyId)
-
+		fmt.Println(cfg)
 		secret.Data["alertmanager.yaml"] = []byte(cfg.String())
 		r.Framework.UpdateSecret("moebius-system", secret)
 	}
@@ -121,12 +120,11 @@ func (r *LogMonitorSumReconciler) DeleteCRD(namespace, strategyId string) error 
 	secret, _ := r.Framework.GetSecret("moebius-system", "alertmanager-r-prometheus-operator-alertmanager")
 	if secret != nil {
 		b := secret.Data["alertmanager.yaml"]
-		fmt.Printf("%s", b)
 		cfg, _ := alertmangerconfig.Load(string(b))
 
 		cfg.Receivers = kubernetes.DeletedReceivers(cfg.Receivers, strategyId)
 		cfg.Route.Routes = kubernetes.DeletedRoutes(cfg.Route.Routes, strategyId)
-
+		fmt.Println(cfg)
 		secret.Data["alertmanager.yaml"] = []byte(cfg.String())
 		r.Framework.UpdateSecret("moebius-system", secret)
 	}
