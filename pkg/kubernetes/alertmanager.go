@@ -37,7 +37,7 @@ func DeletedReceivers(rvs []*alertmangerconfig.Receiver, strategyId string) []*a
 		}
 	}
 
-	if index == -1 {
+	if index != -1 {
 		return append(rvs[:index], rvs[index+1:]...)
 	} else {
 		return rvs
@@ -74,7 +74,7 @@ func DeletedRoutes(rts []*alertmangerconfig.Route, strategyId string) []*alertma
 			break
 		}
 	}
-	if index == -1 {
+	if index != -1 {
 		return append(rts[:index], rts[index+1:]...)
 	} else {
 		return rts
