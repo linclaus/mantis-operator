@@ -5,19 +5,19 @@ metadata:
 spec:
   # Add fields here
   labels: 
-    linkPrefix: link_prefix
-    application: application
-    alarmSource: alarm_source
-    alarmContent: alarmContent
-    metricName: metricName
+    linkPrefix: http://10.136.104.115:31008/#/alarm-manage-vuetify/handle/detail/
+    application: logmonitor测试告警
+    alarmSource: apidemo-10067/mantis-api
+    alarmContent: File>=5次
+    metricName: 当天累计次数
     metricInstanceId: metricInstanceId
-    strategyName: name
+    strategyName: logmonitor测试告警
     strategyId: logmonitor-sample
     contact: contact
     containerName: mantis-api
   dsl: '{"query":{"bool":{"must":[{"term":{"kubernetes.container.name":"mantis-api"}},{"match_phrase":{"message":"File"}}]}}}'
   promql: vector(1)
-  duration: 20m
+  duration: 1m
   contactType: email
   contactValue: linzhiqiang@gridsum.com
   extend: extend

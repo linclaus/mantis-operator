@@ -22,6 +22,7 @@ func (f *Framework) MakeLogMonitorRule(namespace, strategyId string, lm *logmoni
 						"link_prefix": l.LinkPrefix,
 					},
 					Expr: intstr.FromString(lm.Spec.Promql),
+					For:  lm.Spec.Duration,
 					Labels: map[string]string{
 						"alarm_content":      l.AlarmContent,
 						"alarm_source":       l.AlarmSource,
@@ -48,7 +49,7 @@ func (f *Framework) MakeBasicRule(ns, name string, groups []monitoringv1.RuleGro
 			Name:      name,
 			Namespace: ns,
 			Labels: map[string]string{
-				"role": "rulefile",
+				"app": "prometheus-operator",
 			},
 		},
 		Spec: monitoringv1.PrometheusRuleSpec{

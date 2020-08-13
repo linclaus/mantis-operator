@@ -33,6 +33,7 @@ import (
 
 	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
 	alertmangerconfig "github.com/prometheus/alertmanager/config"
+	"gopkg.in/yaml.v2"
 )
 
 // LogMonitorReconciler reconciles a LogMonitor object
@@ -91,7 +92,12 @@ func (r *LogMonitorReconciler) CreateOrUpdateCRD(namespace, strategyId string, l
 	secret, _ := r.Framework.GetSecret("moebius-system", "alertmanager-r-prometheus-operator-alertmanager")
 	if secret != nil {
 		b := secret.Data["alertmanager.yaml"]
-		cfg, _ := alertmangerconfig.Load(string(b))
+		cfg := &alertmangerconfig.Config{}
+		err := yaml.Unmarshal(b, cfg)
+		if err != nil {
+			fmt.Printf("load alertmanager config failed: %s", err)
+			return err
+		}
 
 		cfg.Receivers = kubernetes.UpdatedReceivers(cfg.Receivers, strategyId, lm)
 		cfg.Route.Routes = kubernetes.UpdatedRoutes(cfg.Route.Routes, strategyId, lm)

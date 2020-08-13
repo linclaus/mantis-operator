@@ -24,7 +24,7 @@ func UpdatedReceivers(rvs []*alertmangerconfig.Receiver, strategyId string, lm *
 		Headers: map[string]string{"subject": "{{ template \"" + "email-alert-subject" + "\" . }}"},
 		//TODO add status_webhook
 	}
-	rawurl, _ := url.Parse("http://paasos-moebius-alarm:31172/api/v2/webhook")
+	rawurl, _ := url.Parse("http://mantis-api.moebius-system:8000/api/v2/webhook")
 	wc := &alertmangerconfig.WebhookConfig{
 		URL: &alertmangerconfig.URL{
 			URL: rawurl,
@@ -75,6 +75,7 @@ func UpdatedRoutes(rts []*alertmangerconfig.Route, strategyId string, lm *logmon
 		Receiver:       strategyId,
 		RepeatInterval: &ri,
 		GroupInterval:  &gi,
+		GroupByStr:     []string{"strategy_id"},
 	}
 	if index == -1 {
 		return append(rts, rt)
