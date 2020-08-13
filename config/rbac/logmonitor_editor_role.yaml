@@ -5,7 +5,7 @@ metadata:
   name: logmonitor-editor-role
 rules:
 - apiGroups:
-  - logmonitor.monitoring.coreos.com
+  - monitoring.coreos.com
   resources:
   - logmonitors
   verbs:
@@ -17,7 +17,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - logmonitor.monitoring.coreos.com
+  - monitoring.coreos.com
   resources:
   - logmonitors/status
   verbs:

@@ -6,9 +6,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.2.5
   creationTimestamp: null
-  name: logmonitors.logmonitor.monitoring.coreos.com
+  name: logmonitors.monitoring.coreos.com
 spec:
-  group: logmonitor.monitoring.coreos.com
+  group: monitoring.coreos.com
   names:
     kind: LogMonitor
     listKind: LogMonitorList

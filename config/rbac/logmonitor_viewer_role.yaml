@@ -5,7 +5,7 @@ metadata:
   name: logmonitor-viewer-role
 rules:
 - apiGroups:
-  - logmonitor.monitoring.coreos.com
+  - monitoring.coreos.com
   resources:
   - logmonitors
   verbs:
@@ -13,7 +13,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - logmonitor.monitoring.coreos.com
+  - monitoring.coreos.com
   resources:
   - logmonitors/status
   verbs:

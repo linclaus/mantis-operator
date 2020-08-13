@@ -1,4 +1,4 @@
-apiVersion: logmonitor.monitoring.coreos.com/v1
+apiVersion: monitoring.coreos.com/v1
 kind: LogMonitor
 metadata:
   name: logmonitor-sample

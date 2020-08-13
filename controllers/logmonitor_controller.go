@@ -47,8 +47,8 @@ type LogMonitorReconciler struct {
 	Framework           *kubernetes.Framework
 }
 
-// +kubebuilder:rbac:groups=logmonitor.monitoring.coreos.com,resources=logmonitors,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=logmonitor.monitoring.coreos.com,resources=logmonitors/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=monitoring.coreos.com,resources=logmonitors,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=monitoring.coreos.com,resources=logmonitors/status,verbs=get;update;patch
 
 func (r *LogMonitorReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
