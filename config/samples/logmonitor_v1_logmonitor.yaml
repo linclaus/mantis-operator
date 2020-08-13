@@ -5,6 +5,7 @@ metadata:
 spec:
   # Add fields here
   labels: 
+    linkPrefix: link_prefix
     application: application
     alarmSource: alarm_source
     alarmContent: alarmContent
@@ -13,7 +14,10 @@ spec:
     strategyName: name
     strategyId: logmonitor-sample
     contact: contact
-    containerName: containerName
-  dsl: '{"query":{"bool":{"must":[{"term":{"kubernetes.container.name":"container"}},{"match_phrase":{"message":"hello"}}]}}}'
+    containerName: mantis-api
+  dsl: '{"query":{"bool":{"must":[{"term":{"kubernetes.container.name":"mantis-api"}},{"match_phrase":{"message":"File"}}]}}}'
   promql: vector(1)
   duration: 20m
+  contactType: email
+  contactValue: linzhiqiang@gridsum.com
+  extend: extend

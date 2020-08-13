@@ -1,10 +1,15 @@
 package kubernetes
 
 import (
+	"net/url"
+
+	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
 	alertmangerconfig "github.com/prometheus/alertmanager/config"
+	"github.com/prometheus/common/model"
 )
 
-func UpdatedReceivers(rvs []*alertmangerconfig.Receiver, strategyId string) []*alertmangerconfig.Receiver {
+func UpdatedReceivers(rvs []*alertmangerconfig.Receiver, strategyId string, lm *logmonitorv1.LogMonitor) []*alertmangerconfig.Receiver {
+	//TODO multiEmailConfig if multiContactValues
 	var rv *alertmangerconfig.Receiver
 	index := -1
 	for i, receive := range rvs {
@@ -13,8 +18,22 @@ func UpdatedReceivers(rvs []*alertmangerconfig.Receiver, strategyId string) []*a
 			break
 		}
 	}
+	ec := &alertmangerconfig.EmailConfig{
+		To:      lm.Spec.ContactValue,
+		HTML:    "{{ template \"" + "email-alert-content" + "\" . }}",
+		Headers: map[string]string{"subject": "{{ template \"" + "email-alert-subject" + "\" . }}"},
+		//TODO add status_webhook
+	}
+	rawurl, _ := url.Parse("http://paasos-moebius-alarm:31172/api/v2/webhook")
+	wc := &alertmangerconfig.WebhookConfig{
+		URL: &alertmangerconfig.URL{
+			URL: rawurl,
+		},
+	}
 	rv = &alertmangerconfig.Receiver{
-		Name: strategyId,
+		Name:           strategyId,
+		EmailConfigs:   []*alertmangerconfig.EmailConfig{ec},
+		WebhookConfigs: []*alertmangerconfig.WebhookConfig{wc},
 	}
 	if index == -1 {
 		return append(rvs, rv)
@@ -40,7 +59,7 @@ func DeletedReceivers(rvs []*alertmangerconfig.Receiver, strategyId string) []*a
 	}
 }
 
-func UpdatedRoutes(rts []*alertmangerconfig.Route, strategyId string) []*alertmangerconfig.Route {
+func UpdatedRoutes(rts []*alertmangerconfig.Route, strategyId string, lm *logmonitorv1.LogMonitor) []*alertmangerconfig.Route {
 	var rt *alertmangerconfig.Route
 	index := -1
 	for i, route := range rts {
@@ -49,8 +68,13 @@ func UpdatedRoutes(rts []*alertmangerconfig.Route, strategyId string) []*alertma
 			break
 		}
 	}
+	ri, _ := model.ParseDuration("1s")
+	gi, _ := model.ParseDuration(lm.Spec.Duration)
 	rt = &alertmangerconfig.Route{
-		Receiver: strategyId,
+		Match:          map[string]string{"strategy_id": lm.Spec.Labels.StrategyId},
+		Receiver:       strategyId,
+		RepeatInterval: &ri,
+		GroupInterval:  &gi,
 	}
 	if index == -1 {
 		return append(rts, rt)

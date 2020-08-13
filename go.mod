@@ -12,6 +12,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/alertmanager v0.20.0
 	github.com/prometheus/client_golang v1.7.1
+	github.com/prometheus/common v0.10.0
 	github.com/sirupsen/logrus v1.4.2
 	gopkg.in/yaml.v2 v2.3.0
 	k8s.io/api v0.18.6

@@ -36,9 +36,15 @@ spec:
         spec:
           description: LogMonitorSpec defines the desired state of LogMonitor
           properties:
+            contactType:
+              type: string
+            contactValue:
+              type: string
             dsl:
               type: string
             duration:
+              type: string
+            extend:
               type: string
             labels:
               description: Foo is an example field of LogMonitor. Edit LogMonitor_types.go
@@ -53,6 +59,8 @@ spec:
                 contact:
                   type: string
                 containerName:
+                  type: string
+                linkPrefix:
                   type: string
                 metricInstanceId:
                   type: string

@@ -29,13 +29,17 @@ type LogMonitorSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of LogMonitor. Edit LogMonitor_types.go to remove/update
-	Labels   Label  `json:"labels,omitempty"`
-	Dsl      string `json:"dsl,omitempty"`
-	Promql   string `json:"promql,omitempty"`
-	Duration string `json:"duration,omitempty"`
+	Labels       Label  `json:"labels,omitempty"`
+	Dsl          string `json:"dsl,omitempty"`
+	Promql       string `json:"promql,omitempty"`
+	Duration     string `json:"duration,omitempty"`
+	ContactType  string `json:"contactType,omitempty"`
+	ContactValue string `json:"contactValue,omitempty"`
+	Extend       string `json:"extend,omitempty"`
 }
 
 type Label struct {
+	LinkPrefix       string `json:"linkPrefix,omitempty"`
 	Application      string `json:"application,omitempty"`
 	AlarmSource      string `json:"alarmSource,omitempty"`
 	AlarmContent     string `json:"alarmContent,omitempty"`

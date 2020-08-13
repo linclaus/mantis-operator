@@ -93,8 +93,8 @@ func (r *LogMonitorReconciler) CreateOrUpdateCRD(namespace, strategyId string, l
 		b := secret.Data["alertmanager.yaml"]
 		cfg, _ := alertmangerconfig.Load(string(b))
 
-		cfg.Receivers = kubernetes.UpdatedReceivers(cfg.Receivers, strategyId)
-		cfg.Route.Routes = kubernetes.UpdatedRoutes(cfg.Route.Routes, strategyId)
+		cfg.Receivers = kubernetes.UpdatedReceivers(cfg.Receivers, strategyId, lm)
+		cfg.Route.Routes = kubernetes.UpdatedRoutes(cfg.Route.Routes, strategyId, lm)
 		fmt.Println(cfg)
 		secret.Data["alertmanager.yaml"] = []byte(cfg.String())
 		r.Framework.UpdateSecret("moebius-system", secret)
