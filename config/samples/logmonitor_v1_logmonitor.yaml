@@ -15,7 +15,7 @@ spec:
     strategyId: logmonitor-sample
     contact: contact
     containerName: mantis-api
-  dsl: '{"query":{"bool":{"must":[{"term":{"kubernetes.container.name":"mantis-api"}},{"match_phrase":{"message":"File"}}]}}}'
+  dsl: '{"query":{"bool":{"must":[{"term":{"kubernetes.namespace":"moebius-system"}},{"term":{"kubernetes.container.name":"mantis-api"}},{"match_phrase":{"message":"File"}}]}}}'
   promql: vector(1)
   duration: 1m
   contactType: email
