@@ -50,8 +50,12 @@ func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
 	var elasticExportorAddr string
-	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
-	flag.StringVar(&elasticExportorAddr, "elasticExportor-addr", "http://localhost:8088", "The address of the elasticExportor address")
+	var k8sMasterAddr string
+	metricsAddr = os.Getenv("METRICS-ADDR")
+	elasticExportorAddr = os.Getenv("ELASTICEXPORTOR-ADDR")
+	flag.StringVar(&k8sMasterAddr, "master-addr", "", "The address the kubernetes client use.")
+	// flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
+	// flag.StringVar(&elasticExportorAddr, "elasticExportor-addr", "http://localhost:8088", "The address of the elasticExportor address")
 	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
@@ -72,7 +76,7 @@ func main() {
 	}
 
 	httpClient := &http.Client{}
-	framework, _ := kubernetes.New("", "http://127.0.0.1:8001")
+	framework, _ := kubernetes.New(k8sMasterAddr)
 	if err = (&controllers.LogMonitorReconciler{
 		Client:              mgr.GetClient(),
 		Log:                 ctrl.Log.WithName("controllers").WithName("LogMonitor"),

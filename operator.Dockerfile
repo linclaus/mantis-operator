@@ -1,7 +1,8 @@
-# Build the manager binary
+# Build the operator binary
 FROM golang:1.13 as builder
 
 WORKDIR /workspace
+ENV GOPROXY=https://goproxy.cn,direct
 # Copy the Go Modules manifests
 COPY go.mod go.mod
 COPY go.sum go.sum
@@ -16,13 +17,12 @@ COPY pkg/ pkg/
 COPY controllers/ controllers/
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o manager main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o operator main.go
 
-# Use distroless as minimal base image to package the manager binary
+# Use distroless as minimal base image to package the operator binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
-FROM gcr.io/distroless/static:nonroot
+FROM alpine:3.11
 WORKDIR /
-COPY --from=builder /workspace/manager .
-USER nonroot:nonroot
+COPY --from=builder /workspace/operator .
 
-ENTRYPOINT ["/manager"]
+ENTRYPOINT ["/operator"]

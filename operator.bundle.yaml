@@ -22,33 +22,36 @@ subjects:
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: mantis-log-operator
+  name: mantis-operator
   namespace: moebius-system
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: mantis-log-operator
+        app: mantis-operator
     spec:
       serviceAccountName: mantis-api
       containers:
-        - name: mantis-log-operator
+        - name: mantis-operator
           env:
-            - name: ELASTICSEARCH-URL
-              value: http://10.136.104.115:22956
-          image: linclaus/mantis-esexportor:latest
+            - name: ELASTICEXPORTOR-ADDR
+              value: http://mantis-exportor:8080
+            - name: METRICS-ADDR
+              value: :8080
+          image: linclaus/mantis-operator:v2.1.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+              name: http-metrics
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mantis-log-operator
+  name: mantis-operator
   namespace: moebius-system
   labels:
-    app: mantis-log-operator
+    app: mantis-operator
 spec:
   type: ClusterIP
   ports:
@@ -56,4 +59,4 @@ spec:
       port: 8080
       targetPort: 8080
   selector:
-    app: mantis-log-operator
+    app: mantis-operator

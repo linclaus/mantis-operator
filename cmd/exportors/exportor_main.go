@@ -11,7 +11,7 @@ import (
 )
 
 type Args struct {
-	Addr             string
+	MetricsAddr      string
 	Debug            bool
 	ElasticsearchUrl string
 	DryRun           bool
@@ -20,8 +20,9 @@ type Args struct {
 func main() {
 	args := Args{
 		ElasticsearchUrl: os.Getenv("ELASTICSEARCH-URL"),
+		MetricsAddr:      os.Getenv("METRICS-ADDR"),
 	}
-	flag.StringVar(&args.Addr, "listen-address", ":8088", "The address to listen on for HTTP requests.")
+	// flag.StringVar(&args.MetricsAddr, "listen-address", ":8080", "The address to listen on for HTTP requests.")
 	flag.BoolVar(&args.Debug, "debug", true, "debug or not.")
 	flag.BoolVar(&args.DryRun, "dryrun", false, "uses a null db driver that writes received webhooks to stdout")
 
@@ -38,5 +39,5 @@ func main() {
 	driver.GetVersion()
 
 	s := server.New(args.Debug, driver)
-	s.Start(args.Addr)
+	s.Start(args.MetricsAddr)
 }

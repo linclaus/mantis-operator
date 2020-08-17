@@ -22,33 +22,36 @@ subjects:
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: exportor-api
+  name: mantis-exportor
   namespace: moebius-system
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: exportor-api
+        app: mantis-exportor
     spec:
       serviceAccountName: mantis-api
       containers:
-        - name: exportor-api
-          env:
-            - name: ELASTICSEARCH-URL
-              value: http://10.136.104.115:22956
-          image: linclaus/mantis-esexportor:latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8080
+      - name: mantis-exportor
+        env:
+          - name: ELASTICSEARCH-URL
+            value: http://10.136.104.115:22956
+          - name: METRICS-ADDR
+            value: :8080
+        image: linclaus/mantis-exportor:v2.1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http-metrics
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: exportor-api
+  name: mantis-exportor
   namespace: moebius-system
   labels:
-    app: exportor-api
+    app: mantis-exportor
 spec:
   type: ClusterIP
   ports:
@@ -56,4 +59,4 @@ spec:
       port: 8080
       targetPort: 8080
   selector:
-    app: exportor-api
+    app: mantis-exportor

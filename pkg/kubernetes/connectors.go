@@ -7,7 +7,6 @@ import (
 	apiclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
 
 	monitoringclient "github.com/coreos/prometheus-operator/pkg/client/versioned/typed/monitoring/v1"
 	"github.com/pkg/errors"
@@ -23,10 +22,18 @@ type Framework struct {
 }
 
 // New setups a test framework and returns it.
-func New(kubeconfigPath, masterUrl string) (*Framework, error) {
-	config, err := clientcmd.BuildConfigFromFlags(masterUrl, kubeconfigPath)
-	if err != nil {
-		return nil, errors.Wrap(err, "build config from flags failed")
+func New(k8sMasterAddr string) (*Framework, error) {
+	var err error
+	var config *rest.Config
+	if k8sMasterAddr == "" {
+		config, err = rest.InClusterConfig()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		config = &rest.Config{
+			Host: k8sMasterAddr,
+		}
 	}
 
 	cli, err := kubernetes.NewForConfig(config)
