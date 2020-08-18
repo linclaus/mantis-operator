@@ -94,7 +94,7 @@ func (r *LogMonitorReconciler) CreateOrUpdateCRD(namespace, strategyId string, l
 	secret, _ := r.Framework.GetSecret(conf.PROMETHEUS_NAMESPACE, conf.ALERTMANAGER_SECRET_NAME)
 	if secret != nil {
 		b := secret.Data[conf.ALERTMANAGER_SECRET_DATA_NAME]
-		cfg := &alertmangerconfig.Config{}
+		cfg := &kubernetes.Config{}
 		err := yaml.Unmarshal(b, cfg)
 		if err != nil {
 			fmt.Printf("load alertmanager config failed: %s", err)
