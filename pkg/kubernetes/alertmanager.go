@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"net/url"
+	"strings"
 
 	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
 	alertmangerconfig "github.com/prometheus/alertmanager/config"
@@ -18,12 +19,18 @@ func UpdatedReceivers(rvs []*alertmangerconfig.Receiver, strategyId string, lm *
 			break
 		}
 	}
-	ec := &alertmangerconfig.EmailConfig{
-		To:      lm.Spec.ContactValue,
-		HTML:    "{{ template \"" + "email-alert-content" + "\" . }}",
-		Headers: map[string]string{"subject": "{{ template \"" + "email-alert-subject" + "\" . }}"},
-		//TODO add status_webhook
+	cvs := strings.Split(lm.Spec.ContactValue, ",")
+	ecs := []*alertmangerconfig.EmailConfig{}
+	for _, cv := range cvs {
+		ec := &alertmangerconfig.EmailConfig{
+			To:      cv,
+			HTML:    "{{ template \"" + "email-alert-content" + "\" . }}",
+			Headers: map[string]string{"subject": "{{ template \"" + "email-alert-subject" + "\" . }}"},
+			//TODO add status_webhook
+		}
+		ecs = append(ecs, ec)
 	}
+
 	rawurl, _ := url.Parse("http://mantis-api.moebius-system:8000/api/v2/webhook")
 	wc := &alertmangerconfig.WebhookConfig{
 		URL: &alertmangerconfig.URL{
@@ -32,7 +39,7 @@ func UpdatedReceivers(rvs []*alertmangerconfig.Receiver, strategyId string, lm *
 	}
 	rv = &alertmangerconfig.Receiver{
 		Name:           strategyId,
-		EmailConfigs:   []*alertmangerconfig.EmailConfig{ec},
+		EmailConfigs:   ecs,
 		WebhookConfigs: []*alertmangerconfig.WebhookConfig{wc},
 	}
 	if index == -1 {
