@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -32,6 +33,28 @@ func (c Config) String() string {
 		return fmt.Sprintf("<error creating config string: %s>", err)
 	}
 	return string(b)
+}
+
+func Load(s string) (*Config, error) {
+	cfg := &Config{}
+	err := yaml.UnmarshalStrict([]byte(s), cfg)
+	if err != nil {
+		return nil, err
+	}
+	// Check if we have a root route. We cannot check for it in the
+	// UnmarshalYAML method because it won't be called if the input is empty
+	// (e.g. the config file is empty or only contains whitespace).
+	if cfg.Route == nil {
+		return nil, errors.New("no route provided in config")
+	}
+
+	// Check if continue in root route.
+	if cfg.Route.Continue {
+		return nil, errors.New("cannot have continue in root route")
+	}
+
+	cfg.original = s
+	return cfg, nil
 }
 
 // Receiver configuration provides configuration on how to contact a receiver.
@@ -111,7 +134,7 @@ func UpdatedReceivers(rvs []*Receiver, strategyId string, lm *logmonitorv1.LogMo
 	}
 }
 
-func DeletedReceivers(rvs []*alertmangerconfig.Receiver, strategyId string) []*alertmangerconfig.Receiver {
+func DeletedReceivers(rvs []*Receiver, strategyId string) []*Receiver {
 	index := -1
 	for i, receive := range rvs {
 		if receive.Name == strategyId {

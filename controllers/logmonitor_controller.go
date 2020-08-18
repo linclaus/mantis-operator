@@ -34,7 +34,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
-	alertmangerconfig "github.com/prometheus/alertmanager/config"
 	"gopkg.in/yaml.v2"
 )
 
@@ -130,7 +129,7 @@ func (r *LogMonitorReconciler) DeleteCRD(namespace, strategyId string) error {
 	secret, _ := r.Framework.GetSecret(conf.PROMETHEUS_NAMESPACE, conf.ALERTMANAGER_SECRET_NAME)
 	if secret != nil {
 		b := secret.Data[conf.ALERTMANAGER_SECRET_DATA_NAME]
-		cfg, _ := alertmangerconfig.Load(string(b))
+		cfg, _ := kubernetes.Load(string(b))
 
 		cfg.Receivers = kubernetes.DeletedReceivers(cfg.Receivers, strategyId)
 		cfg.Route.Routes = kubernetes.DeletedRoutes(cfg.Route.Routes, strategyId)
