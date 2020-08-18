@@ -4,6 +4,8 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/linclaus/mantis-opeartor/pkg/conf"
+
 	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
 	alertmangerconfig "github.com/prometheus/alertmanager/config"
 	"github.com/prometheus/common/model"
@@ -31,7 +33,7 @@ func UpdatedReceivers(rvs []*alertmangerconfig.Receiver, strategyId string, lm *
 		ecs = append(ecs, ec)
 	}
 
-	rawurl, _ := url.Parse("http://mantis-api.moebius-system:8000/api/v2/webhook")
+	rawurl, _ := url.Parse(conf.WEBHOOK_URL)
 	wc := &alertmangerconfig.WebhookConfig{
 		URL: &alertmangerconfig.URL{
 			URL: rawurl,

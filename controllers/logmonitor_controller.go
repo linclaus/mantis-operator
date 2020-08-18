@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/linclaus/mantis-opeartor/pkg/conf"
+
 	"github.com/linclaus/mantis-opeartor/pkg/kubernetes"
 	"github.com/linclaus/mantis-opeartor/pkg/model"
 
@@ -89,9 +91,9 @@ func (r *LogMonitorReconciler) CreateOrUpdateCRD(namespace, strategyId string, l
 
 	//update Alertmanager secret
 	//TODO update secret namespace
-	secret, _ := r.Framework.GetSecret("moebius-system", "alertmanager-r-prometheus-operator-alertmanager")
+	secret, _ := r.Framework.GetSecret(conf.PROMETHEUS_NAMESPACE, conf.ALERTMANAGER_SECRET_NAME)
 	if secret != nil {
-		b := secret.Data["alertmanager.yaml"]
+		b := secret.Data[conf.ALERTMANAGER_SECRET_DATA_NAME]
 		cfg := &alertmangerconfig.Config{}
 		err := yaml.Unmarshal(b, cfg)
 		if err != nil {
@@ -102,8 +104,8 @@ func (r *LogMonitorReconciler) CreateOrUpdateCRD(namespace, strategyId string, l
 		cfg.Receivers = kubernetes.UpdatedReceivers(cfg.Receivers, strategyId, lm)
 		cfg.Route.Routes = kubernetes.UpdatedRoutes(cfg.Route.Routes, strategyId, lm)
 		fmt.Println(cfg)
-		secret.Data["alertmanager.yaml"] = []byte(cfg.String())
-		r.Framework.UpdateSecret("moebius-system", secret)
+		secret.Data[conf.ALERTMANAGER_SECRET_DATA_NAME] = []byte(cfg.String())
+		r.Framework.UpdateSecret(conf.PROMETHEUS_NAMESPACE, secret)
 	}
 
 	//create ElasticMetric
@@ -125,16 +127,16 @@ func (r *LogMonitorReconciler) DeleteCRD(namespace, strategyId string) error {
 	r.Framework.DeleteRule(namespace, strategyId)
 
 	//update Alertmanager secret
-	secret, _ := r.Framework.GetSecret("moebius-system", "alertmanager-r-prometheus-operator-alertmanager")
+	secret, _ := r.Framework.GetSecret(conf.PROMETHEUS_NAMESPACE, conf.ALERTMANAGER_SECRET_NAME)
 	if secret != nil {
-		b := secret.Data["alertmanager.yaml"]
+		b := secret.Data[conf.ALERTMANAGER_SECRET_DATA_NAME]
 		cfg, _ := alertmangerconfig.Load(string(b))
 
 		cfg.Receivers = kubernetes.DeletedReceivers(cfg.Receivers, strategyId)
 		cfg.Route.Routes = kubernetes.DeletedRoutes(cfg.Route.Routes, strategyId)
 		fmt.Println(cfg)
-		secret.Data["alertmanager.yaml"] = []byte(cfg.String())
-		r.Framework.UpdateSecret("moebius-system", secret)
+		secret.Data[conf.ALERTMANAGER_SECRET_DATA_NAME] = []byte(cfg.String())
+		r.Framework.UpdateSecret(conf.PROMETHEUS_NAMESPACE, secret)
 	}
 
 	//delete ElasticMetric
