@@ -1,6 +1,6 @@
 package db
 
-import "github.com/linclaus/mantis-opeartor/pkg/model"
+import "github.com/linclaus/mantis-opeartor/pkg/logmetric/model"
 
 var (
 	dateTemplate      = "2006-01-02T15:04:05"

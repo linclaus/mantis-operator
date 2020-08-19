@@ -30,7 +30,7 @@ import (
 	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
 	"github.com/linclaus/mantis-opeartor/controllers"
 	"github.com/linclaus/mantis-opeartor/pkg/kubernetes"
-	"github.com/linclaus/mantis-opeartor/pkg/model"
+	"github.com/linclaus/mantis-opeartor/pkg/logmetric/model"
 	// +kubebuilder:scaffold:imports
 )
 

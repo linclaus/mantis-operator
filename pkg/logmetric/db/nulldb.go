@@ -3,7 +3,7 @@ package db
 import (
 	"log"
 
-	"github.com/linclaus/mantis-opeartor/pkg/model"
+	"github.com/linclaus/mantis-opeartor/pkg/logmetric/model"
 )
 
 type NullDB struct{}

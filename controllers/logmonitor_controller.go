@@ -29,7 +29,7 @@ import (
 
 	"github.com/linclaus/mantis-opeartor/pkg/conf"
 
-	"github.com/linclaus/mantis-opeartor/pkg/model"
+	"github.com/linclaus/mantis-opeartor/pkg/logmetric/model"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"

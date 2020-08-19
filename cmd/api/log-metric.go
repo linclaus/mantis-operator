@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/linclaus/mantis-opeartor/pkg/db"
-	"github.com/linclaus/mantis-opeartor/pkg/server"
+	"github.com/linclaus/mantis-opeartor/pkg/logmetric/db"
+	"github.com/linclaus/mantis-opeartor/pkg/logmetric/server"
 )
 
 type Args struct {

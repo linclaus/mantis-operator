@@ -8,9 +8,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/linclaus/mantis-opeartor/pkg/db"
-	"github.com/linclaus/mantis-opeartor/pkg/metric"
-	"github.com/linclaus/mantis-opeartor/pkg/model"
+	"github.com/linclaus/mantis-opeartor/pkg/logmetric/db"
+	"github.com/linclaus/mantis-opeartor/pkg/logmetric/metric"
+	"github.com/linclaus/mantis-opeartor/pkg/logmetric/model"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
