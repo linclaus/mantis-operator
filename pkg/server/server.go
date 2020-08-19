@@ -7,10 +7,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/linclaus/mantis-opeartor/pkg/metrics"
-
 	"github.com/gorilla/mux"
 	"github.com/linclaus/mantis-opeartor/pkg/db"
+	"github.com/linclaus/mantis-opeartor/pkg/metric"
 	"github.com/linclaus/mantis-opeartor/pkg/model"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -50,7 +49,7 @@ func (s Server) metricHandler(next http.Handler) http.Handler {
 		s.elasticMetricMap.Range(func(k string, v *model.StrategyMetric) bool {
 			em := s.db.GetMetric(*v)
 			log.Printf("elasticMetric: %s\n", em)
-			metrics.ElasticMetricCountVec.WithLabelValues(em.StrategyId).Set(em.Count)
+			metric.ElasticMetricCountVec.WithLabelValues(em.StrategyId).Set(em.Count)
 			return true
 		})
 		next.ServeHTTP(w, r)
@@ -120,7 +119,7 @@ func (s Server) UpdateStrategyMetric(w http.ResponseWriter, r *http.Request) {
 	sm := s.elasticMetricMap.Get(smr.StrategyId)
 	if sm != nil {
 		if sm.Dsl != smr.Dsl || sm.StrategyId != smr.StrategyId {
-			metrics.ElasticMetricCountVec.DeleteLabelValues(sm.StrategyId)
+			metric.ElasticMetricCountVec.DeleteLabelValues(sm.StrategyId)
 		}
 	}
 	sm = &model.StrategyMetric{
@@ -134,7 +133,7 @@ func (s Server) DeleteStrategyMetric(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	em := s.elasticMetricMap.Get(vars["id"])
 	if em != nil {
-		metrics.ElasticMetricCountVec.DeleteLabelValues(em.StrategyId)
+		metric.ElasticMetricCountVec.DeleteLabelValues(em.StrategyId)
 		s.elasticMetricMap.Delete(em.StrategyId)
 	}
 }

@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: mantis
+  name: mantis
+  namespace: moebius-system
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: mantis
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: mantis
+  namespace: moebius-system
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: mantis-core-log-metric-api
+  namespace: moebius-system
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mantis-core-log-metric-api
+    spec:
+      serviceAccountName: mantis
+      containers:
+      - name: mantis-core-log-metric-api
+        env:
+          - name: ELASTICSEARCH-URL
+            value: http://10.136.104.115:22956
+          - name: METRICS-ADDR
+            value: :8080
+        image: docker.gridsumdissector.com/moebius/mantis-core-log-metric-api:v2.1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http-metrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mantis-core-log-metric-api
+  namespace: moebius-system
+  labels:
+    app: mantis-core-log-metric-api
+spec:
+  type: ClusterIP
+  ports:
+    - name: http-metrics
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: mantis-core-log-metric-api

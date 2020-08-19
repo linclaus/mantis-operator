@@ -1,8 +1,9 @@
 package kubernetes
 
 import (
-	"net/http"
 	"time"
+
+	"github.com/linclaus/mantis-opeartor/pkg/prometheus"
 
 	apiclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"
@@ -12,17 +13,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Framework struct {
-	KubeClient      kubernetes.Interface
-	MonClientV1     monitoringclient.MonitoringV1Interface
-	APIServerClient apiclient.Interface
-	HTTPClient      *http.Client
-	MasterHost      string
-	DefaultTimeout  time.Duration
-}
-
 // New setups a test framework and returns it.
-func New(k8sMasterAddr string) (*Framework, error) {
+func New(k8sMasterAddr string) (*prometheus.Framework, error) {
 	var err error
 	var config *rest.Config
 	if k8sMasterAddr == "" {
@@ -56,7 +48,7 @@ func New(k8sMasterAddr string) (*Framework, error) {
 		return nil, errors.Wrap(err, "creating v1 monitoring client failed")
 	}
 
-	f := &Framework{
+	f := &prometheus.Framework{
 		MasterHost:      config.Host,
 		KubeClient:      cli,
 		MonClientV1:     mClientV1,

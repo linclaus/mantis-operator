@@ -23,9 +23,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/linclaus/mantis-opeartor/pkg/alertmanager"
+
+	"github.com/linclaus/mantis-opeartor/pkg/prometheus"
+
 	"github.com/linclaus/mantis-opeartor/pkg/conf"
 
-	"github.com/linclaus/mantis-opeartor/pkg/kubernetes"
 	"github.com/linclaus/mantis-opeartor/pkg/model"
 
 	"github.com/go-logr/logr"
@@ -45,7 +48,7 @@ type LogMonitorReconciler struct {
 	ElasticMetricMap    *model.ElasticMetricMap
 	HttpClient          *http.Client
 	ElasticExportorAddr string
-	Framework           *kubernetes.Framework
+	Framework           *prometheus.Framework
 }
 
 // +kubebuilder:rbac:groups=monitoring.coreos.com,resources=logmonitors,verbs=get;list;watch;create;update;patch;delete
@@ -93,15 +96,15 @@ func (r *LogMonitorReconciler) CreateOrUpdateCRD(namespace, strategyId string, l
 	secret, _ := r.Framework.GetSecret(conf.PROMETHEUS_NAMESPACE, conf.ALERTMANAGER_SECRET_NAME)
 	if secret != nil {
 		b := secret.Data[conf.ALERTMANAGER_SECRET_DATA_NAME]
-		cfg := &kubernetes.Config{}
+		cfg := &alertmanager.Config{}
 		err := yaml.Unmarshal(b, cfg)
 		if err != nil {
 			fmt.Printf("load alertmanager config failed: %s", err)
 			return err
 		}
 
-		cfg.Receivers = kubernetes.UpdatedReceivers(cfg.Receivers, strategyId, lm)
-		cfg.Route.Routes = kubernetes.UpdatedRoutes(cfg.Route.Routes, strategyId, lm)
+		cfg.Receivers = alertmanager.UpdatedReceivers(cfg.Receivers, strategyId, lm)
+		cfg.Route.Routes = alertmanager.UpdatedRoutes(cfg.Route.Routes, strategyId, lm)
 		fmt.Println(cfg)
 		secret.Data[conf.ALERTMANAGER_SECRET_DATA_NAME] = []byte(cfg.String())
 		r.Framework.UpdateSecret(conf.PROMETHEUS_NAMESPACE, secret)
@@ -129,10 +132,10 @@ func (r *LogMonitorReconciler) DeleteCRD(namespace, strategyId string) error {
 	secret, _ := r.Framework.GetSecret(conf.PROMETHEUS_NAMESPACE, conf.ALERTMANAGER_SECRET_NAME)
 	if secret != nil {
 		b := secret.Data[conf.ALERTMANAGER_SECRET_DATA_NAME]
-		cfg, _ := kubernetes.Load(string(b))
+		cfg, _ := alertmanager.Load(string(b))
 
-		cfg.Receivers = kubernetes.DeletedReceivers(cfg.Receivers, strategyId)
-		cfg.Route.Routes = kubernetes.DeletedRoutes(cfg.Route.Routes, strategyId)
+		cfg.Receivers = alertmanager.DeletedReceivers(cfg.Receivers, strategyId)
+		cfg.Route.Routes = alertmanager.DeletedRoutes(cfg.Route.Routes, strategyId)
 		fmt.Println(cfg)
 		secret.Data[conf.ALERTMANAGER_SECRET_DATA_NAME] = []byte(cfg.String())
 		r.Framework.UpdateSecret(conf.PROMETHEUS_NAMESPACE, secret)
