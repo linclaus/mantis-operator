@@ -17,19 +17,14 @@ limitations under the License.
 package controllers
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"net/http"
 
 	"github.com/linclaus/mantis-opeartor/pkg/alertmanager"
 
 	"github.com/linclaus/mantis-opeartor/pkg/prometheus"
 
 	"github.com/linclaus/mantis-opeartor/pkg/conf"
-
-	"github.com/linclaus/mantis-opeartor/pkg/logmetric/model"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -43,12 +38,9 @@ import (
 // LogMonitorReconciler reconciles a LogMonitor object
 type LogMonitorReconciler struct {
 	client.Client
-	Log                 logr.Logger
-	Scheme              *runtime.Scheme
-	ElasticMetricMap    *model.ElasticMetricMap
-	HttpClient          *http.Client
-	ElasticExportorAddr string
-	Framework           *prometheus.Framework
+	Log       logr.Logger
+	Scheme    *runtime.Scheme
+	Framework *prometheus.Framework
 }
 
 // +kubebuilder:rbac:groups=monitoring.coreos.com,resources=logmonitors,verbs=get;list;watch;create;update;patch;delete
@@ -109,18 +101,6 @@ func (r *LogMonitorReconciler) CreateOrUpdateCRD(namespace, strategyId string, l
 		secret.Data[conf.ALERTMANAGER_SECRET_DATA_NAME] = []byte(cfg.String())
 		r.Framework.UpdateSecret(conf.PROMETHEUS_NAMESPACE, secret)
 	}
-
-	//create ElasticMetric
-	sm := &model.StrategyMetric{
-		StrategyId: strategyId,
-		Dsl:        lm.Spec.Dsl,
-	}
-	r.ElasticMetricMap.Set(sm.StrategyId, sm)
-	data := make(map[string]interface{})
-	data["dsl"] = lm.Spec.Dsl
-	jsonData, _ := json.Marshal(data)
-	req, _ := http.NewRequest("PUT", fmt.Sprintf("%s/metric/%s", r.ElasticExportorAddr, sm.StrategyId), bytes.NewReader(jsonData))
-	r.HttpClient.Do(req)
 	return nil
 }
 
@@ -140,11 +120,6 @@ func (r *LogMonitorReconciler) DeleteCRD(namespace, strategyId string) error {
 		secret.Data[conf.ALERTMANAGER_SECRET_DATA_NAME] = []byte(cfg.String())
 		r.Framework.UpdateSecret(conf.PROMETHEUS_NAMESPACE, secret)
 	}
-
-	//delete ElasticMetric
-	r.ElasticMetricMap.Delete(strategyId)
-	req, _ := http.NewRequest("DELETE", fmt.Sprintf("%s/metric/%s", r.ElasticExportorAddr, strategyId), nil)
-	r.HttpClient.Do(req)
 	return nil
 }
 

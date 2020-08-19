@@ -18,7 +18,6 @@ package main
 
 import (
 	"flag"
-	"net/http"
 	"os"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -30,7 +29,6 @@ import (
 	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
 	"github.com/linclaus/mantis-opeartor/controllers"
 	"github.com/linclaus/mantis-opeartor/pkg/kubernetes"
-	"github.com/linclaus/mantis-opeartor/pkg/logmetric/model"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -49,10 +47,8 @@ func init() {
 func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
-	var elasticExportorAddr string
 	var k8sMasterAddr string
 	metricsAddr = os.Getenv("METRICS-ADDR")
-	elasticExportorAddr = os.Getenv("ELASTICEXPORTOR-ADDR")
 	flag.StringVar(&k8sMasterAddr, "master-addr", "", "The address the kubernetes client use.")
 	// flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
 	// flag.StringVar(&elasticExportorAddr, "elasticExportor-addr", "http://localhost:8088", "The address of the elasticExportor address")
@@ -75,16 +71,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	httpClient := &http.Client{}
 	framework, _ := kubernetes.New(k8sMasterAddr)
 	if err = (&controllers.LogMonitorReconciler{
-		Client:              mgr.GetClient(),
-		Log:                 ctrl.Log.WithName("controllers").WithName("LogMonitor"),
-		Scheme:              mgr.GetScheme(),
-		ElasticMetricMap:    new(model.ElasticMetricMap),
-		HttpClient:          httpClient,
-		ElasticExportorAddr: elasticExportorAddr,
-		Framework:           framework,
+		Client:    mgr.GetClient(),
+		Log:       ctrl.Log.WithName("controllers").WithName("LogMonitor"),
+		Scheme:    mgr.GetScheme(),
+		Framework: framework,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "LogMonitor")
 		os.Exit(1)

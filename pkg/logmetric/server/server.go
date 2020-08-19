@@ -21,13 +21,13 @@ type Server struct {
 	debug            bool
 }
 
-func New(debug bool, db db.Storer) Server {
+func New(debug bool, db db.Storer, elasticMetricMap *model.ElasticMetricMap) Server {
 	r := mux.NewRouter()
 	s := Server{
 		debug:            debug,
 		r:                r,
 		db:               db,
-		elasticMetricMap: &model.ElasticMetricMap{},
+		elasticMetricMap: elasticMetricMap,
 	}
 	r.Handle("/metrics", s.metricHandler(promhttp.Handler()))
 	r.HandleFunc("/metric/{id}", s.CreateStrategyMetric).Methods("POST")

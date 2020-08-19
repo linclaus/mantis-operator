@@ -35,8 +35,6 @@ spec:
       containers:
         - name: mantis-core-log-daemon
           env:
-            - name: ELASTICEXPORTOR-ADDR
-              value: http://mantis-core-log-metric-api:8080
             - name: METRICS-ADDR
               value: :8080
           image: docker.gridsumdissector.com/moebius/mantis-core-log-daemon:v2.1.0
