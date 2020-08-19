@@ -20,16 +20,16 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/linclaus/mantis-opeartor/pkg/logmetric/metric"
+	"gitlab.moebius.com/mantis/pkg/logmetric/metric"
 
-	"github.com/linclaus/mantis-opeartor/pkg/logmetric/model"
+	"gitlab.moebius.com/mantis/pkg/logmetric/model"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
+	logmonitorv1 "gitlab.moebius.com/mantis/api/v1"
 )
 
 // LogMonitorReconciler reconciles a LogMonitor object

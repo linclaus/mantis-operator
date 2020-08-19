@@ -30,7 +30,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
+	logmonitorv1 "gitlab.moebius.com/mantis/api/v1"
 	// +kubebuilder:scaffold:imports
 )
 

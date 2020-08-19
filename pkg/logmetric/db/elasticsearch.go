@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
-	"github.com/linclaus/mantis-opeartor/pkg/logmetric/model"
+	"gitlab.moebius.com/mantis/pkg/logmetric/model"
 
 	es6 "github.com/elastic/go-elasticsearch/v6"
 )

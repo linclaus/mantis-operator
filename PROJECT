@@ -1,5 +1,5 @@
 domain: monitoring.coreos.com
-repo: github.com/linclaus/mantis-opeartor
+repo: gitlab.moebius.com/mantis
 resources:
 - group: logmonitor
   kind: LogMonitor

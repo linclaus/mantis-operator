@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/linclaus/mantis-opeartor/pkg/logmetric/db"
-	"github.com/linclaus/mantis-opeartor/pkg/logmetric/server"
+	"gitlab.moebius.com/mantis/pkg/logmetric/db"
+	"gitlab.moebius.com/mantis/pkg/logmetric/server"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -15,9 +15,9 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
-	controllers "github.com/linclaus/mantis-opeartor/pkg/logmetric/controller"
-	"github.com/linclaus/mantis-opeartor/pkg/logmetric/model"
+	logmonitorv1 "gitlab.moebius.com/mantis/api/v1"
+	controllers "gitlab.moebius.com/mantis/pkg/logmetric/controller"
+	"gitlab.moebius.com/mantis/pkg/logmetric/model"
 )
 
 var (

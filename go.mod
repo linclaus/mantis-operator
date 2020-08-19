@@ -1,4 +1,4 @@
-module github.com/linclaus/mantis-opeartor
+module gitlab.moebius.com/mantis
 
 go 1.13
 

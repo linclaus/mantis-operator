@@ -20,18 +20,18 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/linclaus/mantis-opeartor/pkg/alertmanager"
+	"gitlab.moebius.com/mantis/pkg/alertmanager"
 
-	"github.com/linclaus/mantis-opeartor/pkg/prometheus"
+	"gitlab.moebius.com/mantis/pkg/prometheus"
 
-	"github.com/linclaus/mantis-opeartor/pkg/conf"
+	"gitlab.moebius.com/mantis/pkg/conf"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
+	logmonitorv1 "gitlab.moebius.com/mantis/api/v1"
 	"gopkg.in/yaml.v2"
 )
 

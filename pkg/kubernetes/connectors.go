@@ -3,7 +3,7 @@ package kubernetes
 import (
 	"time"
 
-	"github.com/linclaus/mantis-opeartor/pkg/prometheus"
+	"gitlab.moebius.com/mantis/pkg/prometheus"
 
 	apiclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"

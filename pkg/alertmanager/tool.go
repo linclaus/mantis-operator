@@ -4,9 +4,9 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/linclaus/mantis-opeartor/pkg/conf"
+	"gitlab.moebius.com/mantis/pkg/conf"
 
-	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
+	logmonitorv1 "gitlab.moebius.com/mantis/api/v1"
 	alertmangerconfig "github.com/prometheus/alertmanager/config"
 	"github.com/prometheus/common/model"
 )

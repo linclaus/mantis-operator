@@ -9,7 +9,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
-	logmonitorv1 "github.com/linclaus/mantis-opeartor/api/v1"
+	logmonitorv1 "gitlab.moebius.com/mantis/api/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
