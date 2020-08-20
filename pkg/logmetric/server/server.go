@@ -8,10 +8,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gitlab.moebius.com/mantis/pkg/logmetric/db"
 	"gitlab.moebius.com/mantis/pkg/logmetric/metric"
 	"gitlab.moebius.com/mantis/pkg/logmetric/model"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Server struct {

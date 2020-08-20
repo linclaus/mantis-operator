@@ -6,9 +6,9 @@ import (
 
 	"gitlab.moebius.com/mantis/pkg/conf"
 
-	logmonitorv1 "gitlab.moebius.com/mantis/api/v1"
 	alertmangerconfig "github.com/prometheus/alertmanager/config"
 	"github.com/prometheus/common/model"
+	logmonitorv1 "gitlab.moebius.com/mantis/api/v1"
 )
 
 func UpdatedReceivers(rvs []*Receiver, strategyId string, lm *logmonitorv1.LogMonitor) []*Receiver {
