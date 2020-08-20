@@ -19,7 +19,7 @@ type ElasticMetricMap struct {
 	lock             sync.RWMutex
 }
 
-func (m ElasticMetricMap) Get(k string) *StrategyMetric {
+func (m *ElasticMetricMap) Get(k string) *StrategyMetric {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 	if v, exit := m.elasticMetricMap[k]; exit {

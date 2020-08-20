@@ -48,7 +48,6 @@ func (s Server) metricHandler(next http.Handler) http.Handler {
 		log.Println("before metric handler")
 		s.elasticMetricMap.Range(func(k string, v *model.StrategyMetric) bool {
 			em := s.db.GetMetric(*v)
-			log.Printf("elasticMetric: %s\n", em)
 			metric.ElasticMetricCountVec.WithLabelValues(em.StrategyId).Set(em.Count)
 			return true
 		})
