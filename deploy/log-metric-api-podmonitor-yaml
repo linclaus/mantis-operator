@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: mantis-core-log-metric-api
+  name: mantis-core-log-metric-api
+  namespace: moebius-system
+spec:
+  endpoints:
+  - interval: 30s
+    port: http-metrics
+  selector:
+    matchLabels:
+      app: mantis-core-log-metric-api
