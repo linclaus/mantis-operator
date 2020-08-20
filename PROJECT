@@ -4,4 +4,10 @@ resources:
 - group: monitoring
   kind: LogMonitor
   version: v1
+- group: monitoring
+  kind: ServiceMonitor
+  version: v1
+- group: monitoring
+  kind: PodMonitor
+  version: v1
 version: "2"
