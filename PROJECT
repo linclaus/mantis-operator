@@ -1,7 +1,7 @@
-domain: monitoring.coreos.com
+domain: coreos.com
 repo: gitlab.moebius.com/mantis
 resources:
-- group: logmonitor
+- group: monitoring
   kind: LogMonitor
   version: v1
 version: "2"
