@@ -26,8 +26,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	monitoringv1 "github.com/linclaus/test/api/v1"
-	"github.com/linclaus/test/controllers"
+	monitoringv1 "github.com/linclaus/mantis-operator/api/v1"
+	"github.com/linclaus/mantis-operator/controllers"
 	// +kubebuilder:scaffold:imports
 )
 
